@@ -264,7 +264,7 @@ function displayResults(data) {
         return;
 
     }
-
+    // Hiển thị kết quả tìm kiếm thêm nút sao chép
     for (const item of data.results) {
 
         const li = document.createElement("li");
@@ -280,6 +280,20 @@ function displayResults(data) {
         li.appendChild(word);
 
         resultList.appendChild(li);
+
+        const copyButton = document.createElement("button");
+
+        copyButton.className = "copy-button";
+
+        copyButton.textContent = "Sao chép";
+
+        copyButton.addEventListener("click", function () {
+
+            navigator.clipboard.writeText(item.word);
+
+        });
+
+        li.appendChild(copyButton);
 
     }
 

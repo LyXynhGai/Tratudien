@@ -301,6 +301,39 @@ main {
     border-bottom: none;
 }
 
+.result-list .result-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.copy-button {
+    flex-shrink: 0;
+    padding: 7px 14px;
+    border: 1px solid var(--purple-200);
+    border-radius: 999px;
+    background: white;
+    color: var(--purple-700);
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.copy-button:hover {
+    border-color: var(--purple-500);
+    background: var(--purple-600);
+    color: white;
+    box-shadow: 0 3px 10px rgba(147, 51, 234, 0.2);
+}
+
+.copy-button:focus-visible {
+    outline: 3px solid rgba(168, 85, 247, 0.3);
+    outline-offset: 2px;
+}
+
 .result-list li:hover {
     background: var(--purple-50);
     padding-left: 26px;
