@@ -6,13 +6,19 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="description" content="Công cụ tra cứu từ tiếng Việt sử dụng Fuzzy Search">
+    <meta name="description" content="Công cụ tra cứu từ tiếng Việt theo tiền tố">
 
-    <title>Vietnamese Word Lookup</title>
+    <title>Tra từ điển</title>
 
     <link rel="stylesheet" href="./css/style.css">
 
     <script src="./js/script.js" defer></script>
+
+    <script src="./js/find.js" defer></script>
+    
+    <script src="./js/input.js" defer></script>
+
+    <script src="./js/load.js" defer></script>
 </head>
 
 <body>
@@ -20,11 +26,11 @@
     <div class="container">
 
         <header class="header">
-            <h1>Vietnamese Word Lookup</h1>
+            <h1>Tra cú</h1>
 
             <p>
                 Công cụ tra cứu từ tiếng Việt
-                sử dụng thuật toán Fuzzy Search
+                tìm từ bắt đầu bằng từ khóa
             </p>
         </header>
 
@@ -38,7 +44,7 @@
 
                 <div class="search-box">
 
-                    <input type="text" id="searchInput" placeholder="Ví dụ: lap trinh..." autocomplete="off"
+                    <input type="text" id="searchInput" placeholder="Nhập đi nhìn gì...." autocomplete="off"
                         maxlength="100">
 
                     <button id="searchButton">
@@ -102,7 +108,7 @@
 
         <footer class="footer">
             <p>
-                Vietnamese Word Lookup
+                Thái Ly
                 &copy; 2026
             </p>
         </footer>

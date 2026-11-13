@@ -2,7 +2,7 @@
 "use strict";
 
 /* =====================================
-   1. GLOBAL CONFIGURATION
+   1. GLOBAL CONFIGURATION 
 ===================================== */
 
 const CONFIG = {
@@ -18,7 +18,7 @@ let wordList = [];
    2. DOM ELEMENTS 
 ===================================== */
 
-const searchInput = document.getElementById("searchInput"); 
+const searchInput = document.getElementById("searchInput");
 const searchButton = document.getElementById("searchButton");
 
 const ignoreAccent = document.getElementById("ignoreAccent");
@@ -66,8 +66,6 @@ function normalizeForCompare(input, removeAccent = false) {
     return result;
 
 }
-
-
 /* =====================================
    4. VALIDATE INPUT
 ===================================== */
@@ -188,111 +186,12 @@ async function loadWords() {
 
 
 /* =====================================
-   6. LEVENSHTEIN DISTANCE
-===================================== */
-
-// Tính số thao tác tối thiểu
-// để biến chuỗi A thành chuỗi B.
-
-function levenshteinDistance(a, b, maxDistance = Infinity) {
-
-    const strA = Array.from(a);
-    const strB = Array.from(b);
-
-    const lenA = strA.length;
-    const lenB = strB.length;
-
-    // Nếu độ dài chênh lệch quá lớn
-    // thì không cần tính tiếp.
-
-    if (Math.abs(lenA - lenB) > maxDistance) {
-        return maxDistance + 1;
-    }
-
-    // Tối ưu bộ nhớ: chỉ giữ hai hàng.
-    let previous = Array.from(
-        { length: lenB + 1 },
-        (_, index) => index
-    );
-
-    let current = new Array(lenB + 1);
-
-    for (let i = 1; i <= lenA; i++) {
-
-        current[0] = i;
-
-        let minInRow = current[0];
-
-        for (let j = 1; j <= lenB; j++) {
-
-            const cost =
-                strA[i - 1] === strB[j - 1] ? 0 : 1;
-
-            const insertion = current[j - 1] + 1;
-
-            const deletion = previous[j] + 1;
-
-            const substitution = previous[j - 1] + cost;
-
-            current[j] = Math.min(
-                insertion,
-                deletion,
-                substitution
-            );
-
-            minInRow = Math.min(
-                minInRow,
-                current[j]
-            );
-
-        }
-
-        // Nếu mọi phương án đều vượt ngưỡng
-        // thì dừng tính toán.
-
-        if (minInRow > maxDistance) {
-            return maxDistance + 1;
-        }
-
-        [previous, current] = [current, previous];
-
-    }
-
-    return previous[lenB];
-
-}
-
-
-/* =====================================
-   7. GET MAX DISTANCE
-===================================== */
-
-// Xác định số lỗi tối đa được chấp nhận.
-
-function getMaxDistance(length) {
-
-    if (length <= 4) {
-        return 1;
-    }
-
-    if (length <= 8) {
-        return 2;
-    }
-
-    return 3;
-
-}
-
-
-/* =====================================
-   8. FUZZY SEARCH
+   6. PREFIX SEARCH
 ===================================== */
 
 function searchWord(input) {
 
     const keyword = normalizeInput(input);
-
-    // Kiểm tra dữ liệu
     const validation = validateInput(keyword);
 
     if (!validation.valid) {
@@ -305,103 +204,44 @@ function searchWord(input) {
 
     }
 
-    const removeAccent = ignoreAccent.checked;
-
-    // Chuẩn hóa từ khóa để so sánh
     const searchKey = normalizeForCompare(
         keyword,
-        removeAccent
+        ignoreAccent.checked
     );
 
-    const maxDistance = getMaxDistance(
-        Array.from(searchKey).length
-    );
+    const results = wordList
+        .filter(item => {
 
-    const results = [];
-
-    // Duyệt qua toàn bộ từ điển
-    for (const item of wordList) {
-
-        const wordKey = normalizeForCompare(
-            item.original,
-            removeAccent
-        );
-
-        // Tính khoảng cách
-        const distance = levenshteinDistance(
-            searchKey,
-            wordKey,
-            maxDistance
-        );
-
-        // Chỉ lấy những từ nằm trong ngưỡng
-        if (distance <= maxDistance) {
-
-            const maxLength = Math.max(
-                Array.from(searchKey).length,
-                Array.from(wordKey).length
+            const wordKey = normalizeForCompare(
+                item.normalized,
+                ignoreAccent.checked
             );
 
-            // Độ tương đồng tham khảo
-            const similarity = maxLength === 0
-                ? 100
-                : Math.round(
-                    (1 - distance / maxLength) * 100
-                );
+            return wordKey.startsWith(searchKey);
 
-            results.push({
-
-                word: item.original,
-
-                distance: distance,
-
-                similarity: similarity
-
-            });
-
-        }
-
-    }
-
-    // Sắp xếp:
-    // 1. Khoảng cách nhỏ nhất.
-    // 2. Độ tương đồng cao nhất.
-    // 3. Thứ tự chữ cái tiếng Việt.
-
-    results.sort((a, b) => {
-
-        if (a.distance !== b.distance) {
-            return a.distance - b.distance;
-        }
-
-        if (a.similarity !== b.similarity) {
-            return b.similarity - a.similarity;
-        }
-
-        return a.word.localeCompare(
-            b.word,
-            "vi"
-        );
-
-    });
+        })
+        .sort((a, b) => a.original.localeCompare(b.original, "vi"))
+        .slice(0, CONFIG.maxResults)
+        .map(item => ({
+            word: item.original
+        }));
 
     return {
-
         success: true,
-
         message: results.length > 0
             ? "Tìm thấy " + results.length + " kết quả."
-            : "Không tìm thấy từ phù hợp.",
-
-        results: results.slice(0, CONFIG.maxResults)
-
+            : "Không tìm thấy từ bắt đầu bằng \"" + keyword + "\".",
+        results: results
     };
 
 }
 
 
+
+
+
 /* =====================================
-   9. DISPLAY RESULTS
+   7. DISPLAY RESULTS
 ===================================== */
 
 function displayResults(data) {
@@ -437,17 +277,7 @@ function displayResults(data) {
 
         word.textContent = item.word;
 
-        const info = document.createElement("span");
-
-        info.className = "result-info";
-
-        info.textContent =
-            "Khoảng cách: " + item.distance +
-            " | Tương đồng: " + item.similarity + "%";
-
         li.appendChild(word);
-
-        li.appendChild(info);
 
         resultList.appendChild(li);
 
@@ -455,9 +285,8 @@ function displayResults(data) {
 
 }
 
-
 /* =====================================
-   10. HANDLE SEARCH
+   8. HANDLE SEARCH
 ===================================== */
 
 function handleSearch() {
@@ -512,7 +341,7 @@ function handleSearch() {
 
 
 /* =====================================
-   11. EVENT LISTENERS
+   9. EVENT LISTENERS
 ===================================== */
 
 // Nhấn nút tìm kiếm
@@ -525,7 +354,7 @@ searchButton.addEventListener(
 // Nhấn Enter để tìm kiếm
 searchInput.addEventListener(
     "keydown",
-    function(event) {
+    function (event) {
 
         if (event.key === "Enter") {
             handleSearch();
@@ -538,7 +367,7 @@ searchInput.addEventListener(
 // Tự động chuẩn hóa khi rời khỏi ô nhập
 searchInput.addEventListener(
     "blur",
-    function() {
+    function () {
 
         searchInput.value = normalizeInput(
             searchInput.value
