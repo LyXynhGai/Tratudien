@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Công cụ tra cứu từ tiếng Việt sử dụng Fuzzy Search">
+
+    <title>Vietnamese Word Lookup</title>
+
+    <link rel="stylesheet" href="./css/style.css">
+
+    <script src="./js/script.js" defer></script>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <header class="header">
+            <h1>Vietnamese Word Lookup</h1>
+
+            <p>
+                Công cụ tra cứu từ tiếng Việt
+                sử dụng thuật toán Fuzzy Search
+            </p>
+        </header>
+
+        <main>
+
+            <section class="search-section">
+
+                <label for="searchInput">
+                    Nhập từ cần tìm
+                </label>
+
+                <div class="search-box">
+
+                    <input type="text" id="searchInput" placeholder="Ví dụ: lap trinh..." autocomplete="off"
+                        maxlength="100">
+
+                    <button id="searchButton">
+                        Tìm kiếm
+                    </button>
+
+                </div>
+
+                <div class="options">
+
+                    <label>
+                        <input type="checkbox" id="ignoreAccent">
+
+                        Tìm kiếm không phân biệt dấu
+                    </label>
+
+                </div>
+
+                <p id="inputMessage" class="message"></p>
+
+            </section>
+
+            <section class="statistics">
+
+                <div class="stat-card">
+                    <span class="stat-label">
+                        Tổng số từ
+                    </span>
+
+                    <strong id="totalWords">0</strong>
+                </div>
+
+                <div class="stat-card">
+                    <span class="stat-label">
+                        Kết quả tìm được
+                    </span>
+
+                    <strong id="resultCount">0</strong>
+                </div>
+
+            </section>
+
+            <section class="result-section">
+
+                <div class="result-header">
+
+                    <h2>Kết quả tìm kiếm</h2>
+
+                    <span id="resultStatus">
+                        Đang khởi tạo...
+                    </span>
+
+                </div>
+
+                <ul id="resultList" class="result-list">
+                </ul>
+
+            </section>
+
+        </main>
+
+        <footer class="footer">
+            <p>
+                Vietnamese Word Lookup
+                &copy; 2026
+            </p>
+        </footer>
+
+    </div>
+
+</body>
+
+</html>
